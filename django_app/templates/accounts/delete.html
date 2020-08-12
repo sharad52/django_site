@@ -1,0 +1,20 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+{% block content %}
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body">
+            <form method="POST" action="{% url 'django_app:deleteOrder' item.id %}">{% csrf_token %}
+                <p>Are you sure you want to delete {{item}}?</p>
+            
+               <a class="btn btn-sm btn-warning" href="{% url 'django_app:home' %}">Cancel</a>
+            
+                <input type="submit" class="btn btn-sm btn-danger" name="Confirm">
+            
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

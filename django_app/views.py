@@ -1,6 +1,7 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 
 from .models import *
+from .forms import CustomerForm,OrderForm
 
 from django.http import HttpResponse
 
@@ -46,3 +47,75 @@ def customers(request,pk):
     return render(request,'accounts/customers.html',context)
 
 
+
+def createCustomer(request):
+    form = CustomerForm
+    if request.method =='POST':
+        #print('printing POST',request.POST)
+        form=CustomerForm(request.POST)
+        if form.is_valid:
+            form.save()
+            return redirect('/')
+
+    context ={'form':form}
+    
+    return render(request,'accounts/create_customers.html',context)
+
+def createOrder(request):
+    form = OrderForm()
+    if request.method == 'POST':
+        #print('printing POST',request.POST)
+        form = OrderForm(request.POST)
+        if form.is_valid:
+            form.save()
+            return redirect('/')
+
+
+    context = {'form':form}
+    return render (request,'accounts/create_order.html',context)
+
+
+def updateOrder(request,pk_update):
+    order = get_object_or_404(Order,id=pk_update)
+    form = OrderForm(instance=order)
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST,instance=order)
+        if form.is_valid:
+            form.save()
+            return redirect('/')
+    context={'form':form}
+    return render(request,'accounts/create_order.html',context)
+
+
+def deleteOrder(request,pk):
+    order = get_object_or_404(Order,id=pk)
+    if request.method == 'POST':
+        order.delete()
+        return redirect('/')
+    context = {'item':order}
+    return render(request,'accounts/delete.html',context)
+
+def updateCustomer(request,pk):
+    customer = get_object_or_404(Customer,id=pk)
+    form = CustomerForm(instance=customer)
+    if request.method == 'POST':
+        form = CustomerForm(request.POST,instance=customer)
+        if form.is_valid:
+            form.save()
+            return redirect('/')
+
+    context = {'form':form}
+
+    return render(request,'accounts/create_customers.html',context)
+
+
+def deleteCustomer(request,pk):
+    customer = get_object_or_404(Customer,id=pk)
+    if request.method =='POST':
+        customer.delete()
+        return redirect('/')
+
+    context = {'item':customer}
+
+    return render(request,'accounts/delete_customer.html',context)
