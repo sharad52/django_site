@@ -1,11 +1,12 @@
 {% extends 'accounts/main.html' %}
 {% block content %}
+<div class="container">
     <br>
 
     <div class="row">
         <div class="col-md">
-            <div class="card card-body">
-                <h5>Products</h5>
+            <div class="card card-title">
+                <h5>Products</h5><a href="{% url 'django_app:createProduct' %}"><i class="fa fa-plus" aria-hidden="true"></i></a>
             </div>
             <div class="card card-body">
                 <table class="table">
@@ -23,8 +24,10 @@
                     {% endfor %}
                     
                 </table>
+        
             </div>
         </div>
         
     </div>
+</div>
 {% endblock %}

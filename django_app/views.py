@@ -1,7 +1,7 @@
 from django.shortcuts import render,get_object_or_404,redirect
-
+from django.forms import inlineformset_factory
 from .models import *
-from .forms import CustomerForm,OrderForm
+from .forms import CustomerForm,OrderForm,ProductForm
 
 from django.http import HttpResponse
 
@@ -61,17 +61,20 @@ def createCustomer(request):
     
     return render(request,'accounts/create_customers.html',context)
 
-def createOrder(request):
-    form = OrderForm()
+def createOrder(request,pk):
+    OrderFormSet = inlineformset_factory(Customer,Order,fields=('product','status'),extra=8)
+    customer = get_object_or_404(Customer,id=pk)
+    #form = OrderForm(initial={'customer':customer})
+    formset = OrderFormSet(queryset=Order.objects.none(),instance=customer)
     if request.method == 'POST':
         #print('printing POST',request.POST)
-        form = OrderForm(request.POST)
-        if form.is_valid:
-            form.save()
+        formset = OrderFormSet(request.POST,instance=customer)
+        if formset.is_valid:
+            formset.save()
             return redirect('/')
 
 
-    context = {'form':form}
+    context = {'formset':formset}
     return render (request,'accounts/create_order.html',context)
 
 
@@ -119,3 +122,16 @@ def deleteCustomer(request,pk):
     context = {'item':customer}
 
     return render(request,'accounts/delete_customer.html',context)
+
+def createProduct(request):
+    form = ProductForm()
+    if request.method == 'POST':
+        form = ProductForm(request.POST or None)
+        if form.is_valid:
+            form.save()
+            return redirect('/')
+
+
+    context = {'form':form}
+
+    return render(request,'accounts/create_product.html',context)
