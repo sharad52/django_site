@@ -2,6 +2,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.forms import inlineformset_factory
 from .models import *
 from .forms import CustomerForm,OrderForm,ProductForm
+from .filters import OrderFilter
 
 from django.http import HttpResponse
 
@@ -37,11 +38,15 @@ def customers(request,pk):
     customer = get_object_or_404(Customer,id=pk)
     orders = customer.order_set.all()
     total_orders = orders.count()
+
+    myFilter = OrderFilter(request.GET, queryset=orders)
+    orders=myFilter.qs
     
     context = {
         'customer':customer,
         'orders':orders,
         'total_orders':total_orders,
+        'myFilter':myFilter
     }
 
     return render(request,'accounts/customers.html',context)
