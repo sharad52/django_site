@@ -3,10 +3,12 @@ from django.forms import inlineformset_factory
 from .models import *
 from .forms import CustomerForm,OrderForm,ProductForm
 from .filters import OrderFilter
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse
 
 
+@login_required(login_url='userAuth:login')
 def home(request):
     customers = Customer.objects.all()
     orders = Order.objects.all()
@@ -27,13 +29,13 @@ def home(request):
 
     return render(request,'accounts/dashboard.html',context)
 
-
+@login_required(login_url='userAuth:login')
 def products(request):
     products = Product.objects.all()
 
     return render(request,'accounts/products.html',{ 'products':products })
 
-
+@login_required(login_url='userAuth:login')
 def customers(request,pk):
     customer = get_object_or_404(Customer,id=pk)
     orders = customer.order_set.all()
@@ -52,7 +54,7 @@ def customers(request,pk):
     return render(request,'accounts/customers.html',context)
 
 
-
+@login_required(login_url='userAuth:login')
 def createCustomer(request):
     form = CustomerForm
     if request.method =='POST':
@@ -65,7 +67,7 @@ def createCustomer(request):
     context ={'form':form}
     
     return render(request,'accounts/create_customers.html',context)
-
+@login_required(login_url='userAuth:login')
 def createOrder(request,pk):
     OrderFormSet = inlineformset_factory(Customer,Order,fields=('product','status'),extra=8)
     customer = get_object_or_404(Customer,id=pk)
@@ -82,7 +84,7 @@ def createOrder(request,pk):
     context = {'formset':formset}
     return render (request,'accounts/create_order.html',context)
 
-
+@login_required(login_url='userAuth:login')
 def updateOrder(request,pk_update):
     order = get_object_or_404(Order,id=pk_update)
     form = OrderForm(instance=order)
@@ -95,7 +97,7 @@ def updateOrder(request,pk_update):
     context={'form':form}
     return render(request,'accounts/create_order.html',context)
 
-
+@login_required(login_url='userAuth:login')
 def deleteOrder(request,pk):
     order = get_object_or_404(Order,id=pk)
     if request.method == 'POST':
@@ -103,7 +105,7 @@ def deleteOrder(request,pk):
         return redirect('/')
     context = {'item':order}
     return render(request,'accounts/delete.html',context)
-
+@login_required(login_url='userAuth:login')
 def updateCustomer(request,pk):
     customer = get_object_or_404(Customer,id=pk)
     form = CustomerForm(instance=customer)
@@ -117,7 +119,7 @@ def updateCustomer(request,pk):
 
     return render(request,'accounts/create_customers.html',context)
 
-
+@login_required(login_url='userAuth:login')
 def deleteCustomer(request,pk):
     customer = get_object_or_404(Customer,id=pk)
     if request.method =='POST':
@@ -127,7 +129,7 @@ def deleteCustomer(request,pk):
     context = {'item':customer}
 
     return render(request,'accounts/delete_customer.html',context)
-
+@login_required(login_url='userAuth:login')
 def createProduct(request):
     form = ProductForm()
     if request.method == 'POST':
